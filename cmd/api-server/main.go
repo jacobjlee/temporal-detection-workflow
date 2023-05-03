@@ -3,8 +3,10 @@ package main
 import (
 	"log"
 
-	"github.com/jacobjlee/temporal-detection-workflow/internal/server"
 	"go.temporal.io/sdk/client"
+
+	"github.com/jacobjlee/temporal-detection-workflow/internal/detection"
+	"github.com/jacobjlee/temporal-detection-workflow/internal/server"
 )
 
 func main() {
@@ -14,8 +16,10 @@ func main() {
 		log.Fatalln("Unable to create client", err)
 	}
 
+	detectionService := detection.NewDetectionService(detection.NewDetectionRepository())
+
 	// create the server
-	s := server.NewServer(temporalClient)
+	s := server.NewServer(temporalClient, detectionService)
 	s.MountHandlers()
 	log.Fatal(s.Run("localhost", 8000))
 }
