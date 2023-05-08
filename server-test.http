@@ -1,0 +1,11 @@
+### healthcheck API
+GET http://localhost:8000/health
+
+### detection start API
+POST http://localhost:8000/v1/detection/start
+
+### detection end API
+POST http://localhost:8000/v1/detection/end
+Content-Type: application/json
+
+{"workflow_id": "greeting-workflow"}
