@@ -8,7 +8,7 @@ import (
 
 type Service interface {
 	Start(ctx context.Context, temporalClient client.Client) error
-	End(ctx context.Context, temporalClient client.Client) error
+	End(ctx context.Context, temporalClient client.Client, workflowID string) error
 }
 
 type DetectionService struct {
@@ -29,6 +29,10 @@ func (s *DetectionService) Start(ctx context.Context, temporalClient client.Clie
 	return nil
 }
 
-func (s *DetectionService) End(ctx context.Context, temporalClient client.Client) error {
-	return s.repository.EndDetection(ctx, temporalClient)
+func (s *DetectionService) End(ctx context.Context, temporalClient client.Client, workflowID string) error {
+	err := s.repository.EndDetection(ctx, temporalClient, workflowID)
+	if err != nil {
+		return err
+	}
+	return nil
 }
