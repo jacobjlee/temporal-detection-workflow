@@ -3,9 +3,12 @@ GET http://localhost:8000/health
 
 ### detection start API
 POST http://localhost:8000/v1/detection/start
+Content-Type: application/json
+
+{"alarm_schedule_id": "7b9e23fa-bd96-440f-a827-5b5f9397cd90", "user_email": "jacob@delightroom.com"}
 
 ### detection end API
 POST http://localhost:8000/v1/detection/end
 Content-Type: application/json
 
-{"workflow_id": "greeting-workflow"}
+{"alarm_schedule_id": "7b9e23fa-bd96-440f-a827-5b5f9397cd90", "user_email": "jacob@delightroom.com"}
