@@ -7,8 +7,8 @@ import (
 )
 
 type Service interface {
-	Start(ctx context.Context, temporalClient client.Client) error
-	End(ctx context.Context, temporalClient client.Client, workflowID string) error
+	Start(ctx context.Context, temporalClient client.Client, alarmScheduleID string, userEmail string) error
+	End(ctx context.Context, temporalClient client.Client, alarmScheduleID string, userEmail string) error
 }
 
 type DetectionService struct {
@@ -21,16 +21,16 @@ func NewDetectionService(repository Repository) *DetectionService {
 	}
 }
 
-func (s *DetectionService) Start(ctx context.Context, temporalClient client.Client) error {
-	err := s.repository.StartDetection(ctx, temporalClient)
+func (s *DetectionService) Start(ctx context.Context, temporalClient client.Client, alarmScheduleID string, userEmail string) error {
+	err := s.repository.StartDetection(ctx, temporalClient, alarmScheduleID, userEmail)
 	if err != nil {
 		return err
 	}
 	return nil
 }
 
-func (s *DetectionService) End(ctx context.Context, temporalClient client.Client, workflowID string) error {
-	err := s.repository.EndDetection(ctx, temporalClient, workflowID)
+func (s *DetectionService) End(ctx context.Context, temporalClient client.Client, alarmScheduleID string, userEmail string) error {
+	err := s.repository.EndDetection(ctx, temporalClient, alarmScheduleID, userEmail)
 	if err != nil {
 		return err
 	}

@@ -11,8 +11,8 @@ import (
 )
 
 type Repository interface {
-	StartDetection(ctx context.Context, temporalClient client.Client) error
-	EndDetection(ctx context.Context, temporalClient client.Client, workflowID string) error
+	StartDetection(ctx context.Context, temporalClient client.Client, alarmScheduleID string, userEmail string) error
+	EndDetection(ctx context.Context, temporalClient client.Client, alarmScheduleID string, userEmail string) error
 }
 
 type DetectionRepository struct{}
@@ -21,13 +21,12 @@ func NewDetectionRepository() *DetectionRepository {
 	return &DetectionRepository{}
 }
 
-func (r *DetectionRepository) StartDetection(ctx context.Context, temporalClient client.Client) error {
+func (r *DetectionRepository) StartDetection(ctx context.Context, temporalClient client.Client, alarmScheduleID string, userEmail string) error {
 	options := client.StartWorkflowOptions{
-		ID:                 "greeting-workflow",
+		ID:                 alarmScheduleID,
 		TaskQueue:          workflow.GreetingTaskQueue,
 		WorkflowRunTimeout: time.Second * 100,
 	}
-
 	// Start the Workflow
 	name := "World"
 	we, err := temporalClient.ExecuteWorkflow(context.Background(), options, workflow.GreetingWorkflow, name)
@@ -48,13 +47,14 @@ func (r *DetectionRepository) StartDetection(ctx context.Context, temporalClient
 	return nil
 }
 
-func (r *DetectionRepository) EndDetection(ctx context.Context, temporalClient client.Client, workflowID string) error {
-	err := temporalClient.TerminateWorkflow(ctx, workflowID, "", "")
-	if err != nil {
-		log.Fatalln("unable to terminate Workflow", err)
-	}
+func (r *DetectionRepository) EndDetection(ctx context.Context, temporalClient client.Client, alarmScheduleID string, userEmail string) error {
 
-	printResults("Workflow terminated", workflowID, "")
+	//err := temporalClient.TerminateWorkflow(ctx, alarmScheduleID, "", "")
+	//if err != nil {
+	//	log.Fatalln("unable to terminate Workflow", err)
+	//}
+	//
+	//printResults("Workflow terminated", alarmScheduleID, "")
 	return nil
 }
 

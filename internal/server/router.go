@@ -10,9 +10,16 @@ import (
 	"github.com/jacobjlee/temporal-detection-workflow/internal/detection"
 )
 
+// DetectionStartRequest is the request body for the detection start endpoint
+type DetectionStartRequest struct {
+	AlarmScheduleID string `json:"alarm_schedule_id"`
+	UserEmail       string `json:"user_email"`
+}
+
 // DetectionEndRequest is the request body for the detection end endpoint
 type DetectionEndRequest struct {
-	WorkflowID string `json:"workflow_id"`
+	AlarmScheduleID string `json:"alarm_schedule_id"`
+	UserEmail       string `json:"user_email"`
 }
 
 // apiRouter mounts the api handlers to the router
@@ -31,7 +38,13 @@ func detectionRouter(temporalClient client.Client, detectionService detection.Se
 	r.Post("/start", func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
 
-		err := detectionService.Start(ctx, temporalClient)
+		var req DetectionStartRequest
+		if err := render.DecodeJSON(r.Body, &req); err != nil {
+			http.Error(w, err.Error(), http.StatusBadRequest)
+			return
+		}
+
+		err := detectionService.Start(ctx, temporalClient, req.AlarmScheduleID, req.UserEmail)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
@@ -47,7 +60,7 @@ func detectionRouter(temporalClient client.Client, detectionService detection.Se
 			return
 		}
 
-		err := detectionService.End(ctx, temporalClient, req.WorkflowID)
+		err := detectionService.End(ctx, temporalClient, req.AlarmScheduleID, req.UserEmail)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
