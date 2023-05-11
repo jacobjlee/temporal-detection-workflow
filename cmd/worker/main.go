@@ -20,7 +20,7 @@ func main() {
 	// This worker hosts both Workflow and Activity functions
 	w := worker.New(c, workflow.GreetingTaskQueue, worker.Options{})
 	w.RegisterWorkflow(workflow.GreetingWorkflow)
-	w.RegisterActivity(workflow.ComposeGreeting)
+	//w.RegisterActivity(workflow.ComposeGreeting)
 
 	// Start listening to the Task Queue
 	err = w.Run(worker.InterruptCh())

@@ -27,34 +27,30 @@ func (r *DetectionRepository) StartDetection(ctx context.Context, temporalClient
 		TaskQueue:          workflow.GreetingTaskQueue,
 		WorkflowRunTimeout: time.Second * 100,
 	}
+
 	// Start the Workflow
-	name := "World"
-	we, err := temporalClient.ExecuteWorkflow(context.Background(), options, workflow.GreetingWorkflow, name)
+	wakeUpTime := time.Now().Add(30 * time.Second)
+	_, err := temporalClient.ExecuteWorkflow(context.Background(), options, workflow.GreetingWorkflow, wakeUpTime)
 	if err != nil {
 		log.Fatalln("unable to complete Workflow", err)
 		return err
 	}
 
-	// Get the results
-	var greeting string
-	err = we.Get(context.Background(), &greeting)
-	if err != nil {
-		log.Fatalln("unable to get Workflow result", err)
-		return err
-	}
+	fmt.Println("Hittttt")
 
-	printResults(greeting, we.GetID(), we.GetRunID())
 	return nil
 }
 
 func (r *DetectionRepository) EndDetection(ctx context.Context, temporalClient client.Client, alarmScheduleID string, userEmail string) error {
+	wakeUpTime := time.Now().Add(3 * time.Second)
 
-	//err := temporalClient.TerminateWorkflow(ctx, alarmScheduleID, "", "")
-	//if err != nil {
-	//	log.Fatalln("unable to terminate Workflow", err)
-	//}
-	//
-	//printResults("Workflow terminated", alarmScheduleID, "")
+	// Send a signal to the running Workflow to be executed right away
+	err := temporalClient.SignalWorkflow(context.Background(), alarmScheduleID, "", workflow.SignalType, wakeUpTime)
+	if err != nil {
+		log.Fatalln("Unable to signale workflow", err)
+	}
+	log.Println("Signaled workflow to update wake-up time",
+		"WorkflowID", alarmScheduleID, "WakeUpTime", wakeUpTime)
 	return nil
 }
 
